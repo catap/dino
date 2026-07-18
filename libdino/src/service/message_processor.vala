@@ -39,6 +39,7 @@ public class MessageProcessor : StreamInteractionModule, Object {
         received_pipeline.connect(new StoreMessageListener(this, stream_interactor));
         received_pipeline.connect(new StoreContentItemListener(stream_interactor));
         received_pipeline.connect(new MarkupListener(stream_interactor));
+        received_pipeline.connect(new PreDisplayedHandler(stream_interactor));
 
         stream_interactor.account_added.connect(on_account_added);
 
@@ -375,6 +376,29 @@ public class MessageProcessor : StreamInteractionModule, Object {
         public override async bool run(Entities.Message message, Xmpp.MessageStanza stanza, Conversation conversation) {
             if (message.body == null) return true;
             stream_interactor.get_module(ContentItemStore.IDENTITY).insert_message(message, conversation);
+            return false;
+        }
+    }
+
+    private class PreDisplayedHandler : MessageListener {
+        public string[] after_actions_const = new string[]{ "STORE_CONTENT_ITEM" };
+        public override string action_group { get { return "DISPLAYED_HANDLING"; } }
+        public override string[] after_actions { get { return after_actions_const; } }
+
+        private StreamInteractor stream_interactor;
+
+        public PreDisplayedHandler(StreamInteractor stream_interactor) {
+            this.stream_interactor = stream_interactor;
+        }
+
+        public override async bool run(Entities.Message message, Xmpp.MessageStanza stanza, Conversation conversation) {
+            var flag = stream_interactor.get_stream(conversation.account).get_flag(MessageDisplayedSynchronization.Flag.IDENTITY);
+            if (flag != null && message.server_id != null) {
+                Jid stanza_id_by = message.type_ == Message.Type.GROUPCHAT ? conversation.counterpart.bare_jid : conversation.account.bare_jid;
+                if (flag.is_displayed(conversation.counterpart, stanza_id_by, message.server_id)) {
+                    stream_interactor.get_module(CounterpartInteractionManager.IDENTITY).mark_displayed_up_to_message(conversation, message);
+                }
+            }
             return false;
         }
     }

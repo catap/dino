@@ -136,6 +136,7 @@ sources = files(
     'src/module/xep/0461_replies.vala',
     'src/module/xep/0463_muc_affiliations_versioning.vala',
     'src/module/xep/0482_call_invites.vala',
+    'src/module/xep/0490_message_displayed_synchronization.vala',
     'src/file_content_type.vala',
     'src/util.vala',
     'src/weak_map.vala',
