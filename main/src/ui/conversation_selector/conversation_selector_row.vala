@@ -322,12 +322,22 @@ public class ConversationSelectorRow : ListBoxRow {
                     image.set_from_icon_name("dino-device-desktop-symbolic");
                 }
 
-                if (show == Presence.Stanza.SHOW_AWAY) {
-                    Util.force_color(image, "#FF9800");
-                } else if (show == Presence.Stanza.SHOW_XA || show == Presence.Stanza.SHOW_DND) {
-                    Util.force_color(image, "#FF5722");
-                } else {
-                    Util.force_color(image, "#4CAF50");
+                switch (show) {
+                    case Presence.Stanza.SHOW_ONLINE:
+                        image.add_css_class("dino-status-online");
+                        break;
+                    case Presence.Stanza.SHOW_CHAT:
+                        image.add_css_class("dino-status-chat");
+                        break;
+                    case Presence.Stanza.SHOW_AWAY:
+                        image.add_css_class("dino-status-away");
+                        break;
+                    case Presence.Stanza.SHOW_XA:
+                        image.add_css_class("dino-status-xa");
+                        break;
+                    case Presence.Stanza.SHOW_DND:
+                        image.add_css_class("dino-status-dnd");
+                        break;
                 }
 
                 string? status = null;
