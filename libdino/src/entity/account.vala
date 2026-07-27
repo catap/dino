@@ -22,6 +22,7 @@ public class Account : Object {
     public string? alias { get; set; }
     public bool enabled { get; set; default = false; }
     public string? roster_version { get; set; }
+    public string? user_agent_id { get; set; }
 
     private Database? db;
 
@@ -33,6 +34,7 @@ public class Account : Object {
             error("Auto-generated resource was invalid (%s)", e.message);
         }
         this.password = password;
+        this.user_agent_id = random_uuid();
     }
 
     public Account.from_row(Database db, Qlite.Row row) throws InvalidJidError {
@@ -43,8 +45,12 @@ public class Account : Object {
         alias = row[db.account.alias];
         enabled = row[db.account.enabled];
         roster_version = row[db.account.roster_version];
+        user_agent_id = row[db.account.user_agent_id];
 
         notify.connect(on_update);
+
+        // Add user agent id if missing
+        if (user_agent_id == null) user_agent_id = random_uuid();
     }
 
     public void persist(Database db) {
@@ -105,6 +111,8 @@ public class Account : Object {
                 update.set(db.account.enabled, enabled); break;
             case "roster-version":
                 update.set(db.account.roster_version, roster_version); break;
+            case "user-agent-id":
+                update.set(db.account.user_agent_id, user_agent_id); break;
         }
         update.perform();
     }

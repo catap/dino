@@ -11,12 +11,16 @@ namespace Xmpp.Xep.ExtensibleSaslProfile {
 
         public string name { get; set; }
         public string password { get; set; }
+        public string user_agent_id { get; set; }
+        public string? user_agent_software { get; set; default = "Dino"; }
+        public string? user_agent_device { get; set; }
 
         public signal void received_auth_failure(XmppStream stream, StanzaNode node);
 
-        public Module(string name, string password) {
+        public Module(string name, string password, string user_agent_id) {
             this.name = name;
             this.password = password;
+            this.user_agent_id = user_agent_id;
         }
 
         public override void attach(XmppStream stream) {
@@ -116,6 +120,11 @@ namespace Xmpp.Xep.ExtensibleSaslProfile {
                     authenticate_node.put_node(inline_activation_node);
                 }
             }
+
+            StanzaNode user_agent_node = new StanzaNode.build("user-agent", NS_URI).put_attribute("id", user_agent_id);
+            if (user_agent_software != null) user_agent_node.put_node(new StanzaNode.build("software", NS_URI).put_node(new StanzaNode.text(user_agent_software)));
+            if (user_agent_device != null) user_agent_node.put_node(new StanzaNode.build("device", NS_URI).put_node(new StanzaNode.text(user_agent_device)));
+            authenticate_node.put_node(user_agent_node);
 
             stream.write(authenticate_node);
         }

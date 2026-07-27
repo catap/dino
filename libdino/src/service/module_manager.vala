@@ -47,7 +47,7 @@ public class ModuleManager {
             module_map[account] = new ArrayList<XmppStreamModule>();
             module_map[account].add(new Iq.Module());
 
-            var sasl2_module = new Xep.ExtensibleSaslProfile.Module(account.bare_jid.localpart, account.password);
+            var sasl2_module = new Xep.ExtensibleSaslProfile.Module(account.bare_jid.localpart, account.password, account.user_agent_id);
             module_map[account].add(sasl2_module);
             module_map[account].add(new Sasl.Module(account.bare_jid.to_string(), account.password));
             module_map[account].add(new Xep.StreamManagement.Module());
