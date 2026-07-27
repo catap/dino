@@ -27,6 +27,17 @@ public class StreamInteractor : Object {
         });
     }
 
+    public Jid get_account_full_jid(Account account) {
+        XmppStream stream = get_stream(account);
+        if (stream != null) {
+            Bind.Flag flag = stream.get_flag(Bind.Flag.IDENTITY);
+            if (flag != null) {
+                return flag.my_jid;
+            }
+        }
+        return account.full_jid;
+    }
+
     public void connect_account(Account account) {
         module_manager.initialize(account);
         account_added(account);

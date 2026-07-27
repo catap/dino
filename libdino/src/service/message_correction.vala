@@ -64,7 +64,7 @@ public class MessageCorrection : StreamInteractionModule, MessageListener {
 
         Jid? own_jid = null;
         if (conversation.type_ == Conversation.Type.CHAT) {
-            own_jid = conversation.account.full_jid;
+            own_jid = stream_interactor.get_account_full_jid(conversation.account);
         } else if (conversation.type_ == Conversation.Type.GROUPCHAT) {
             own_jid = stream_interactor.get_module(MucManager.IDENTITY).get_own_jid(conversation.counterpart, conversation.account);
         }

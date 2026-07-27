@@ -30,15 +30,15 @@ public class Module : XmppStreamNegotiationModule {
         return null;
     }
 
-    public async ErrorStanza? change_password(XmppStream stream, Jid jid, string new_pw) {
+    public async ErrorStanza? change_password(XmppStream stream, Jid bare_jid, string new_pw) {
         StanzaNode pw_change_node = new StanzaNode.build("query", NS_URI).add_self_xmlns();
         StanzaNode username_node = new StanzaNode.build("username", NS_URI);
         StanzaNode pw_node = new StanzaNode.build("password", NS_URI);
-        username_node.put_node(new StanzaNode.text(jid.localpart));
+        username_node.put_node(new StanzaNode.text(bare_jid.localpart));
         pw_node.put_node(new StanzaNode.text(new_pw));
         pw_change_node.put_node(username_node);
         pw_change_node.put_node(pw_node);
-        Iq.Stanza set_password_iq = new Iq.Stanza.set(pw_change_node) { to=jid.bare_jid.domain_jid };
+        Iq.Stanza set_password_iq = new Iq.Stanza.set(pw_change_node) { to=bare_jid.domain_jid };
 
         Iq.Stanza chpw_result = yield stream.get_module(Iq.Module.IDENTITY).send_iq_async(stream, set_password_iq);
         if (chpw_result.is_error()) {

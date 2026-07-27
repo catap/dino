@@ -76,9 +76,10 @@ public class FileManager : StreamInteractionModule, Object {
         file_transfer.account = conversation.account;
         file_transfer.counterpart = conversation.counterpart;
         if (conversation.type_.is_muc_semantic()) {
-            file_transfer.ourpart = stream_interactor.get_module(MucManager.IDENTITY).get_own_jid(conversation.counterpart, conversation.account) ?? conversation.account.bare_jid;
-        } else {
-            file_transfer.ourpart = conversation.account.full_jid;
+            file_transfer.ourpart = stream_interactor.get_module(MucManager.IDENTITY).get_own_jid(conversation.counterpart, conversation.account);
+        }
+        if (file_transfer.ourpart == null) {
+            file_transfer.ourpart = stream_interactor.get_account_full_jid(conversation.account);
         }
         file_transfer.direction = FileTransfer.DIRECTION_SENT;
         file_transfer.time = new DateTime.now_utc();
@@ -362,7 +363,7 @@ public class FileManager : StreamInteractionModule, Object {
                 file_transfer.ourpart = from;
                 file_transfer.direction = FileTransfer.DIRECTION_SENT;
             } else {
-                file_transfer.ourpart = conversation.account.full_jid;
+                file_transfer.ourpart = stream_interactor.get_account_full_jid(conversation.account);
                 file_transfer.direction = FileTransfer.DIRECTION_RECEIVED;
             }
         }

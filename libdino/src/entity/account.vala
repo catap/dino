@@ -6,13 +6,14 @@ namespace Dino.Entities {
 public class Account : Object {
 
     public int id { get; set; }
-    public string localpart { get { return full_jid.localpart; } }
-    public string domainpart { get { return full_jid.domainpart; } }
+    public string localpart { get { return bare_jid.localpart; } }
+    public string domainpart { get { return bare_jid.domainpart; } }
     public string resourcepart {
         get { return full_jid.resourcepart; }
         private set { full_jid = full_jid.with_resource(value); }
     }
     public Jid bare_jid { owned get { return full_jid.bare_jid; } }
+    [Version (deprecated = true)]
     public Jid full_jid { get; private set; }
     public string? password { get; set; }
     public string display_name {
