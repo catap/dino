@@ -10,13 +10,13 @@ public class Plugin : RootInterface, Object {
     public FileSender file_sender;
 
     public void registered(Dino.Application app) {
-        this.app = app;
-
-        file_provider = new FileProvider(app.stream_interactor, app.db);
-        file_sender = new HttpFileSender(app.stream_interactor, app.db);
-
-        app.stream_interactor.get_module(FileManager.IDENTITY).add_provider(file_provider);
-        app.stream_interactor.get_module(FileManager.IDENTITY).add_sender(file_sender);
+//        this.app = app;
+//
+//        file_provider = new FileProvider(app.stream_interactor, app.db);
+//        file_sender = new HttpFileSender(app.stream_interactor, app.db);
+//
+//        app.stream_interactor.get_module(FileManager.IDENTITY).add_provider(file_provider);
+//        app.stream_interactor.get_module(FileManager.IDENTITY).add_sender(file_sender);
     }
 
     public void shutdown() {

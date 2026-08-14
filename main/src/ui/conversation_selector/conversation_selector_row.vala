@@ -226,6 +226,25 @@ public class ConversationSelectorRow : ListBoxRow {
                         message_label.label = (file_is_image ? _("Image received") : _("File received") );
                     }
                     break;
+                case FileGroupItem.TYPE:
+                    FileGroupItem file_group_item = last_content_item as FileGroupItem;
+                    FileTransfer first_transfer = file_group_item.file_group.file_transfers.get(0);
+
+                    if (conversation.type_ == Conversation.Type.GROUPCHAT) {
+                        // TODO properly display nick for oneself
+                        nick_label.label = Util.get_participant_display_name(stream_interactor, conversation, first_transfer.from, true) + ": ";
+                    } else {
+                        nick_label.label = first_transfer.direction == Message.DIRECTION_SENT ? _("Me") + ": " : "";
+                    }
+
+                    bool all_files_images = Ui.all_files_images(file_group_item.file_group.file_transfers);
+                    change_label_attribute(message_label, attr_style_new(Pango.Style.ITALIC));
+                    if (first_transfer.direction == Message.DIRECTION_SENT) {
+                        message_label.label = (all_files_images ? _("Images sent") : _("Files sent") );
+                    } else {
+                        message_label.label = (all_files_images ? _("Images received") : _("Files received") );
+                    }
+                    break;
                 case CallItem.TYPE:
                     CallItem call_item = (CallItem) last_content_item;
                     Call call = call_item.call;

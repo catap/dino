@@ -216,10 +216,6 @@ public class ConversationViewController : Object {
         chooser.show();
     }
 
-    private void send_file(File file) {
-        stream_interactor.get_module(FileManager.IDENTITY).send_file.begin(file, conversation);
-    }
-
     private bool forward_key_press_to_chat_input(EventControllerKey key_controller, uint keyval, uint keycode, Gdk.ModifierType state) {
         if (view.get_root().get_focus() is TextView) {
             return false;

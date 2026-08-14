@@ -7,7 +7,7 @@ using Dino.Entities;
 namespace Dino {
 
 public class Database : Qlite.Database {
-    private const int VERSION = 33;
+    private const int VERSION = 34;
 
     public class AccountTable : Table {
         public Column<int> id = new Column.Integer("id") { primary_key = true, auto_increment = true };
@@ -222,6 +222,28 @@ public class Database : Qlite.Database {
             init({id, file_sharing_id, account_id, counterpart_id, counterpart_resource, our_resource, direction,
                 time, local_time, encryption, file_name, path, mime_type, size, state, provider, info, modification_date,
                 width, height, length});
+        }
+    }
+
+    public class FileTransferGroupTable : Table {
+        public Column<int> id = new Column.Integer("id") { primary_key = true, auto_increment = true };
+        public Column<int> message_id = new Column.Integer("message_id");
+
+        internal FileTransferGroupTable(Database db) {
+            base(db, "file_transfer_group");
+            init({id, message_id});
+            index("file_transfer_group_message_id_idx", {message_id});
+        }
+    }
+
+    public class FileTransferGroupFileTransferTable : Table {
+        public Column<int> file_transfer_group_id = new Column.Integer("file_transfer_group_id");
+        public Column<int> file_transfer_id = new Column.Integer("file_transfer_id");
+
+        internal FileTransferGroupFileTransferTable(Database db) {
+            base(db, "file_transfer_group_file_transfer");
+            init({file_transfer_group_id, file_transfer_id});
+            index("file_transfer_group_file_transfer_id_idx", {file_transfer_group_id});
         }
     }
 
@@ -489,6 +511,8 @@ public class Database : Qlite.Database {
     public RealJidTable real_jid { get; private set; }
     public OccupantIdTable occupantid { get; private set; }
     public FileTransferTable file_transfer { get; private set; }
+    public FileTransferGroupTable file_transfer_group { get; private set; }
+    public FileTransferGroupFileTransferTable file_transfer_group_file_transfer { get; private set; }
     public FileHashesTable file_hashes { get; private set; }
     public FileThumbnailsTable file_thumbnails { get; private set; }
     public SourcesTable sfs_sources { get; private set; }
@@ -525,6 +549,8 @@ public class Database : Qlite.Database {
         occupantid = new OccupantIdTable(this);
         real_jid = new RealJidTable(this);
         file_transfer = new FileTransferTable(this);
+        file_transfer_group = new FileTransferGroupTable(this);
+        file_transfer_group_file_transfer = new FileTransferGroupFileTransferTable(this);
         file_hashes = new FileHashesTable(this);
         file_thumbnails = new FileThumbnailsTable(this);
         sfs_sources = new SourcesTable(this);
@@ -542,7 +568,7 @@ public class Database : Qlite.Database {
         settings = new SettingsTable(this);
         account_settings = new AccountSettingsTable(this);
         conversation_settings = new ConversationSettingsTable(this);
-        init({ account, jid, entity, content_item, message, message_occupant_id, body_meta, message_correction, reply, real_jid, occupantid, file_transfer, file_hashes, file_thumbnails, sfs_sources, call, call_counterpart, conversation, avatar, entity_identity, entity_feature, roster, mam_catchup, reaction, muc_affiliation, muc_affiliation_version, settings, account_settings, conversation_settings });
+        init({ account, jid, entity, content_item, message, message_occupant_id, body_meta, message_correction, reply, real_jid, occupantid, file_transfer, file_transfer_group, file_transfer_group_file_transfer, file_hashes, file_thumbnails, sfs_sources, call, call_counterpart, conversation, avatar, entity_identity, entity_feature, roster, mam_catchup, reaction, muc_affiliation, muc_affiliation_version, settings, account_settings, conversation_settings });
 
         try {
             exec("PRAGMA journal_mode = WAL");

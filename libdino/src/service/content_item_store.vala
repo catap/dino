@@ -26,6 +26,8 @@ public class ContentItemStore : StreamInteractionModule, Object {
         this.db = db;
 
         stream_interactor.get_module(FileManager.IDENTITY).received_file.connect(insert_file_transfer);
+        stream_interactor.get_module(FileManager2.IDENTITY).received_file.connect(insert_file_transfer);
+        stream_interactor.get_module(FileManager2.IDENTITY).received_file_group.connect(insert_file_group);
         stream_interactor.get_module(MessageProcessor.IDENTITY).message_received.connect(announce_message);
         stream_interactor.get_module(MessageProcessor.IDENTITY).message_sent.connect(announce_message);
         stream_interactor.get_module(Calls.IDENTITY).call_incoming.connect(insert_call);
@@ -86,6 +88,13 @@ public class ContentItemStore : StreamInteractionModule, Object {
                 if (call != null) {
                     var call_item = new CallItem(call, conversation, id);
                     return call_item;
+                }
+                break;
+            case 4:
+                FileTransferGroup? file_group = stream_interactor.get_module(FileTransferStorage.IDENTITY).get_file_group_by_id(foreign_id, conversation);
+                if (file_group != null) {
+                    var file_group_item = new FileGroupItem(file_group, conversation, id);
+                    return file_group_item;
                 }
                 break;
             default:
@@ -300,6 +309,16 @@ public class ContentItemStore : StreamInteractionModule, Object {
         new_item(item, conversation);
     }
 
+    private void insert_file_group(FileTransferGroup file_group, Conversation conversation) {
+        FileGroupItem item = new FileGroupItem(file_group, conversation, file_group.id);
+        // TODO fix local time
+        item.id = db.add_content_item(conversation, item.time, item.time, 4, file_group.id, false);
+        if (collection_conversations.has_key(conversation)) {
+            collection_conversations.get(conversation).insert_item(item);
+        }
+        new_item(item, conversation);
+    }
+
     private void insert_call(Call call, CallState call_state, Conversation conversation) {
         CallItem item = new CallItem(call, conversation, -1);
         item.id = db.add_content_item(conversation, call.time, call.local_time, 3, call.id, false);
@@ -412,6 +431,21 @@ public class FileItem : ContentItem {
                 return Entities.Message.Marked.WONTSEND;
         }
         assert_not_reached();
+    }
+}
+
+public class FileGroupItem : ContentItem {
+    public const string TYPE = "file_group";
+
+    public FileTransferGroup file_group;
+    public Conversation conversation;
+
+    public FileGroupItem(FileTransferGroup file_group, Conversation conversation, int id) {
+        var file_transfer = file_group.file_transfers.get(0);
+        base(id, TYPE, file_transfer.from, file_transfer.time, file_transfer.encryption, Message.Marked.NONE);
+
+        this.file_group = file_group;
+        this.conversation = conversation;
     }
 }
 

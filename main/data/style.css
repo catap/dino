@@ -188,6 +188,11 @@ window.dino-main .file-image-widget .file-box-outer button:hover {
     border-radius: 100%;
 }
 
+/* Image file group */
+.dino-main .image-group {
+    border-radius: 8px;
+}
+
 /* Call widget */
 
 window.dino-main .call-box-outer.incoming {

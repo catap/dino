@@ -9,6 +9,9 @@ namespace Dino.Ui {
 
     public class FileTransmissionProgress : Adw.Bin {
 
+        public signal void start_download();
+        public signal void cancel_transfer();
+
         public enum State {
             UNKNOWN_SOURCE,
             DOWNLOAD_NOT_STARTED,
@@ -124,11 +127,12 @@ namespace Dino.Ui {
                     break;
                 case DOWNLOAD_NOT_STARTED_FAILED_BEFORE:
                 case DOWNLOAD_NOT_STARTED:
+                    start_download();
                     this.activate_action("file.download", null);
                     break;
                 case DOWNLOADING:
                 case UPLOADING:
-                    this.activate_action("file.cancel", null);
+                    cancel_transfer();
                     break;
             }
         }

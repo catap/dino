@@ -20,6 +20,7 @@ dependencies = [
     dep_gio,
     dep_glib,
     dep_gmodule,
+    dep_libsoup,
     dep_qlite,
     dep_xmpp_vala
 ]
@@ -33,8 +34,11 @@ sources = files(
     'src/entity/conversation.vala',
     'src/entity/encryption.vala',
     'src/entity/file_transfer.vala',
+    'src/entity/file_transfer_group.vala',
     'src/entity/message.vala',
     'src/entity/settings.vala',
+    'src/file_transfer/file_manager2.vala',
+    'src/file_transfer/http_transfer.vala',
     'src/plugin/interfaces.vala',
     'src/plugin/loader.vala',
     'src/plugin/registry.vala',
